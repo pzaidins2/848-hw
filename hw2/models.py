@@ -154,17 +154,22 @@ class AnswerExtractor:
         # modified from Huggingface QA fine tuning tutorial
         def preprocess_function(examples):
             questions = [q.strip() for q in examples["text"]]
+            first_sentences = [q.strip() for q in examples["first_sentence"]]
             # print( wiki_lookup[ examples["page"][0]])
+            wiki_texts = list(map( lambda x: wiki_lookup[ x ][ "text" ], examples["page"]))
+            # print(len([*questions,*map(lambda x: x.split(".")[0], questions )]))
+            # print(len([ *wiki_texts, *wiki_texts]))
             inputs = self.tokenizer(
-                questions,
-                list( map( lambda x: wiki_lookup[ x ][ "text" ], examples["page"]) ),
+                [*questions,*first_sentences],
+                [ *wiki_texts, *wiki_texts ],
                 truncation=True,
                 return_offsets_mapping=True,
                 padding="max_length",
             )
 
             offset_mapping = inputs.pop("offset_mapping")
-            answers = examples["answer"]
+            answers = [ *examples["answer"], *examples["answer"] ]
+            # print(len(answers))
             start_positions = []
             end_positions = []
 
@@ -205,6 +210,7 @@ class AnswerExtractor:
 
         tokenized_dataset = training_dataset.map(preprocess_function, batched=True,
                                                  remove_columns=training_dataset["train"].column_names)
+        tokenized_dataset.shuffle(seed=0)
         data_collator = default_data_collator
         # metric = load_metric("accuracy")
         training_args = TrainingArguments(
@@ -212,11 +218,11 @@ class AnswerExtractor:
             evaluation_strategy="epoch",
             save_strategy="epoch",
             learning_rate=2e-5,
-            per_device_train_batch_size=32,
-            per_device_eval_batch_size=32,
+            per_device_train_batch_size=6,
+            per_device_eval_batch_size=6,
             num_train_epochs=10,
             weight_decay=0.01,
-            gradient_checkpointing=True,
+            # gradient_checkpointing=True,
             fp16=True,
             load_best_model_at_end=True,
             metric_for_best_model="eval_loss",
