@@ -16,3 +16,4 @@ qanta.*.json
 
 .vscode
 .DS_Store
+/hw2/results/

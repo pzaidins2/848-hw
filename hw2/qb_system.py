@@ -5,12 +5,12 @@ import torch
 from pip import main
 from tfidf_guesser import TfidfGuesser
 from models import AnswerExtractor, Retriever, ReRanker, WikiLookup
-
+from datasets import load_dataset
 
 
 class QuizBowlSystem:
 
-    def __init__(self) -> None:
+    def __init__(self, training_set="../data/small.guesstrain.json", eval_set="../data/small.guessdev.json") -> None:
         """Fill this method to create attributes, load saved models, etc
         Don't have any arguments to this constructor. 
         If you really want to have arguments, they should have some default values set.
@@ -32,6 +32,11 @@ class QuizBowlSystem:
         self.answer_extractor = AnswerExtractor()
         print('Loading the Answer Extractor model...')
         self.answer_extractor.load(answer_extractor_base_model)
+        print( "Constructing Datasets...")
+        training_dataset = load_dataset("json",data_files={"train":training_set, "eval":eval_set }
+                                        ,field="questions")
+        print("Training the Answer Extractor model...")
+        self.answer_extractor.train(training_dataset,self.wiki_lookup)
         
     def retrieve_page(self, question: str, disable_reranking=False) -> str:
         """Retrieves the wikipedia page name for an input question."""

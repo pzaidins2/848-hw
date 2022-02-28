@@ -124,7 +124,8 @@ if __name__ == "__main__":
                            type=str, default="models/tfidf.pickle")
     argparser.add_argument("--eval_dataset", help="Dataset Path for the eval dataset. Must be Qanta Json format.",
                            type=str, default="../data/qanta.dev.2018.json")
-
+    argparser.add_argument("--training_dataset", help="Dataset Path for the training dataset. Must be Qanta Json format.",
+                           type=str, default="../data/qanta.train.2018.json")
     argparser.add_argument('--mode', type=str, choices=["predict", "eval"], 
                             help="Only saves the predictions in predict mode. Also computes metrics in eval mode.")
     
@@ -144,8 +145,13 @@ if __name__ == "__main__":
     argparser.set_defaults(debug_run=False)
 
 
-    # Load Dataset
+    # Load
+    with open(args.eval_dataset) as f:
+        eval_data = json.load(f)
     eval_questions = QantaDatabase(args.eval_dataset).all_questions
+
+    with open(args.training_dataset) as f:
+        training_data = json.load(f)
 
     if args.debug_run:
         print('Running only on 20 examples.') # Change this to suit your iteration speed
