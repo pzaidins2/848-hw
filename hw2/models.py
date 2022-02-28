@@ -9,7 +9,7 @@ from transformers import TrainingArguments, Trainer
 # ADDED
 from datasets import load_metric
 import numpy as np
-from transformers import default_data_collator
+from transformers import default_data_collator, EarlyStoppingCallback
 
 # Change this based on the GPU you use on your machine
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -150,27 +150,8 @@ class AnswerExtractor:
     def train(self, training_dataset, wiki_lookup):
         """Fill this method with code that finetunes Answer Extraction task on QuizBowl examples.
         Feel free to change and modify the signature of the method to suit your needs."""
-        # tokenize questions and answers
-        # def tokenize_text(input):
-        #     return [self.tokenizer(input["text"], padding="max_length", truncation=True)]
-        #
-        # def tokenize_answer(input):
-        #     return self.tokenizer(input["answer"], padding="max_length", truncation=True)
-        # def numerate_answer(input):
-        #     return
-        # training_dataset = training_dataset.map( tokenize_text )
-        # training_dataset = training_dataset.map(tokenize_answer)
-        # eval_dataset = eval_dataset.map(tokenize_text)
-        # eval_dataset = eval_dataset.map(tokenize_answer)
-        # training_dataset = training_dataset.rename_column("answer", "label")
-        # eval_dataset = eval_dataset.rename_column("answer", "label")
-        # print(training_dataset)
-        # print(training_dataset["text"])
-        # print(eval_dataset)
-        # metric = load_metric("accuracy")
+
         # modified from Huggingface QA fine tuning tutorial
-
-
         def preprocess_function(examples):
             questions = [q.strip() for q in examples["text"]]
             # print( wiki_lookup[ examples["page"][0]])
@@ -238,7 +219,9 @@ class AnswerExtractor:
             gradient_checkpointing=True,
             fp16=True,
             load_best_model_at_end=True,
-            metric_for_best_model="eval_loss"
+            metric_for_best_model="eval_loss",
+            save_total_limit=5,
+            dataloader_num_workers=2
             # eval_accumulation_steps=8
         )
 
@@ -249,6 +232,7 @@ class AnswerExtractor:
             eval_dataset=tokenized_dataset["eval"],
             data_collator=data_collator,
             tokenizer=self.tokenizer,
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
             # compute_metrics=metric
         )
         trainer.train()
