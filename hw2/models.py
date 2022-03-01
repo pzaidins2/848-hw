@@ -9,8 +9,8 @@ from transformers import TrainingArguments, Trainer
 # ADDED
 from datasets import load_metric
 import numpy as np
-from transformers import default_data_collator, EarlyStoppingCallback
-
+from transformers import default_data_collator, get_cosine_with_hard_restarts_schedule_with_warmup, AdamW
+from transformers import EarlyStoppingCallback
 # Change this based on the GPU you use on your machine
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 print( torch.cuda.is_available() )
@@ -217,20 +217,28 @@ class AnswerExtractor:
             output_dir="./results",
             evaluation_strategy="epoch",
             save_strategy="epoch",
-            learning_rate=2e-5,
+            # learning_rate=3e-5,
             per_device_train_batch_size=6,
             per_device_eval_batch_size=6,
-            num_train_epochs=10,
-            weight_decay=0.01,
+            num_train_epochs=20,
+            # weight_decay=0.01,
             # gradient_checkpointing=True,
             fp16=True,
             load_best_model_at_end=True,
             metric_for_best_model="eval_loss",
-            save_total_limit=5,
-            dataloader_num_workers=2
+            save_total_limit=6,
+            dataloader_num_workers=2,
+            logging_steps=72
             # eval_accumulation_steps=8
         )
-
+        num_training_steps = 20 * len( tokenized_dataset["train"] )
+        optimizer = AdamW(self.model.parameters(),lr=2e-5, weight_decay=0.01)
+        lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(
+                optimizer=optimizer,
+                num_warmup_steps=1//7*num_training_steps//5,
+                num_training_steps=num_training_steps//5,
+                num_cycles=5,
+            )
         trainer = Trainer(
             model=self.model,
             args=training_args,
@@ -238,7 +246,8 @@ class AnswerExtractor:
             eval_dataset=tokenized_dataset["eval"],
             data_collator=data_collator,
             tokenizer=self.tokenizer,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=4)],
+            optimizers=(optimizer,lr_scheduler)
             # compute_metrics=metric
         )
         trainer.train()
