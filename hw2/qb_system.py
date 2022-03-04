@@ -11,7 +11,7 @@ class QuizBowlSystem:
 
 
     def __init__(self, training_set="../data/small.guesstrain.json", eval_set="../data/small.guessdev.json", mode="predict",
-                 wiki_lookup_path: str = '../data/wiki_lookup.2018.json') -> None:
+                 wiki_lookup_path: str ="custom_data/wiki_lookup.2018.json" ) -> None:
         """Fill this method to create attributes, load saved models, etc
         Don't add any other arguments to this constructor. 
         If you really want to have arguments, they should have some default values set.
