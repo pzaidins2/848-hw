@@ -16,10 +16,9 @@ qanta.*.json
 
 .vscode
 .DS_Store
-/hw2/results/
-/hw2/custom_data/wiki_lookup.2018.json
-hw2/answer_extractor.zip
-hw2/models/answer_extractor.zip
-hw2/custom_data.zip
-/hw2/models/answer_extractor/
-hw2/outputs.zip
+
+*.zip
+*.json
+*.bin
+*.pt
+
