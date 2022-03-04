@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="53348d26-f686-4c58-8dc8-e008ffa82d12" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/hw2/gather_resources.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hw2/outputs/first_sent_predictions.json" beforeDir="false" afterPath="$PROJECT_DIR$/hw2/outputs/first_sent_predictions.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hw2/outputs/last_sent_predictions.json" beforeDir="false" afterPath="$PROJECT_DIR$/hw2/outputs/last_sent_predictions.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hw2/qb_system.py" beforeDir="false" afterPath="$PROJECT_DIR$/hw2/qb_system.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hw2/run_e2e_eval.py" beforeDir="false" afterPath="$PROJECT_DIR$/hw2/run_e2e_eval.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hw2/train_and_eval.sh" beforeDir="false" afterPath="$PROJECT_DIR$/hw2/train_and_eval.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
