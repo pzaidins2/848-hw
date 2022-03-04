@@ -22,3 +22,5 @@ qanta.*.json
 *.bin
 *.pt
 
+sol_gen.py
+
