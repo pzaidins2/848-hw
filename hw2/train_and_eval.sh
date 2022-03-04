@@ -28,6 +28,14 @@ if [ ! -f "${data_dir}/wiki_lookup.2018.json" ]; then
     echo "Download complete.\n"
 fi
 
+# Download Answer Extractor
+if [ ! -f "${data_dir}/wiki_lookup.2018.json" ]; then
+    echo "Downloading Wiki Lookup jsons 2018.04.18"
+    wget "https://s3-us-west-2.amazonaws.com/pinafore-us-west-2/qanta-jmlr-datasets/wikipedia/wiki_lookup.json"
+    mv wiki_lookup.json "${data_dir}/wiki_lookup.2018.json"
+    echo "Download complete.\n"
+fi
+
 echo "Running tfidf_guesser.py..."
 
 # Only run this when you change the train data for guesser

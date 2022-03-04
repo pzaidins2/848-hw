@@ -146,19 +146,21 @@ if __name__ == "__main__":
 
 
     # Load
-    with open(args.eval_dataset) as f:
-        eval_data = json.load(f)
-    eval_questions = QantaDatabase(args.eval_dataset).all_questions
+    if not args.mode == "eval":
+        with open(args.eval_dataset) as f:
+            eval_data = json.load(f)
 
-    with open(args.training_dataset) as f:
-        training_data = json.load(f)
+
+        with open(args.training_dataset) as f:
+            training_data = json.load(f)
+    eval_questions = QantaDatabase(args.eval_dataset).all_questions
 
     if args.debug_run:
         print('Running only on 20 examples.') # Change this to suit your iteration speed
         eval_questions = eval_questions[:20]
 
     # Load the Model
-    model = QuizBowlSystem()
+    model = QuizBowlSystem(mode=args.mode)
     
     pred_dict = generate_first_sent_predictions(model, eval_questions)
     

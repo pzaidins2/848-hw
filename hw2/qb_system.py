@@ -10,7 +10,7 @@ from datasets import load_dataset
 
 class QuizBowlSystem:
 
-    def __init__(self, training_set="../data/small.guesstrain.json", eval_set="../data/small.guessdev.json") -> None:
+    def __init__(self, training_set="../data/small.guesstrain.json", eval_set="../data/small.guessdev.json", mode="predict") -> None:
         """Fill this method to create attributes, load saved models, etc
         Don't have any arguments to this constructor. 
         If you really want to have arguments, they should have some default values set.
@@ -20,24 +20,31 @@ class QuizBowlSystem:
         guesser.load('models/tfidf.pickle')
 
         print('Loding the Wiki Lookups...')
-        self.wiki_lookup = WikiLookup('../data/wiki_lookup.2018.json')
+        # self.wiki_lookup = WikiLookup('../data/wiki_lookup.2018.json')
+        self.wiki_lookup = WikiLookup('custom_data/wiki_lookup.2018.json')
 
         reranker = ReRanker()
         print('Loading the Reranker model...')
         reranker.load('amberoad/bert-multilingual-passage-reranking-msmarco')
         
         self.retriever = Retriever(guesser, reranker, wiki_lookup=self.wiki_lookup)
-        
-        answer_extractor_base_model = "csarron/bert-base-uncased-squad-v1"
+        # if mode == "eval":
+        #     answer_extractor_base_model = "csarron/bert-base-uncased-squad-v1"
+        # else:
+        answer_extractor_base_model = "./models/answer_extractor"
+
         self.answer_extractor = AnswerExtractor()
+
         print('Loading the Answer Extractor model...')
         self.answer_extractor.load(answer_extractor_base_model)
-        print( "Constructing Datasets...")
-        training_dataset = load_dataset("json",data_files={"train":training_set, "eval":eval_set }
-                                        ,field="questions")
-        print("Training the Answer Extractor model...")
-        self.answer_extractor.train(training_dataset,self.wiki_lookup)
-        
+        # if mode != "eval":
+        #     print("Constructing Datasets...")
+        #     training_dataset = load_dataset("json", data_files={"train": training_set, "eval": eval_set}
+        #                                     , field="questions")
+        #     print("Training the Answer Extractor model...")
+        #     self.answer_extractor.train(training_dataset, self.wiki_lookup)
+
+
     def retrieve_page(self, question: str, disable_reranking=False) -> str:
         """Retrieves the wikipedia page name for an input question."""
         with torch.no_grad():
