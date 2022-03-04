@@ -16,7 +16,11 @@ qanta.*.json
 
 .vscode
 .DS_Store
+
 *.zip
 *.json
 *.bin
 *.pt
+
+sol_gen.py
+
